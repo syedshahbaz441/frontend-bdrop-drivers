@@ -6,6 +6,7 @@ import { ChatPage } from './components/ChatPage';
 import { DeliveriesPage, Job } from './components/DeliveriesPage';
 import { HomePage } from './components/HomePage';
 import { MeetingsPage } from './components/MeetingsPage';
+import { SurgePage, SurgePlace } from './components/SurgePage';
 import { ACCEPT_ORDER_ACTION, configureDriverNotifications, dismissDriverOrderNotification, REJECT_ORDER_ACTION } from './notifications';
 
 const jobs: Job[] = [
@@ -22,7 +23,12 @@ const meetings = [
   { title: 'Local route planning', host: 'BuddyDrop Operations', time: '11:00 AM', date: 'Aug 25' },
 ];
 const calendarDays: (number | null)[] = [null, null, null, null, null, null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-type Screen = 'home' | 'deliveries' | 'meetings' | 'chat';
+const surgePlaces: SurgePlace[] = [
+  { name: 'Riverside Market', area: 'Downtown East', distance: '0.8 mi', demand: 'Very high', bonus: '+$8/hr', query: 'Riverside Market, Downtown East' },
+  { name: 'North Loop Cafe', area: 'North Loop', distance: '1.4 mi', demand: 'High', bonus: '+$5/hr', query: 'North Loop Cafe' },
+  { name: 'Westside Pharmacy', area: 'Westside', distance: '2.1 mi', demand: 'High', bonus: '+$4/hr', query: 'Westside Pharmacy' },
+];
+type Screen = 'home' | 'deliveries' | 'surge' | 'meetings' | 'chat';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
@@ -63,11 +69,12 @@ export default function App() {
   const selectDate = (date: string) => { setMeetingDate(date); setSelectedDay(date === 'Today' ? 22 : date === 'Tomorrow' ? 23 : 25); };
 
   return <SafeAreaView style={styles.safeArea}><StatusBar style="light" /><ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-    {screen === 'home' && <HomePage online={online} onToggleOnline={() => setOnline((value) => !value)} onOpenProfile={() => setProfileOpen(true)} onOpenEarnings={() => setEarningsOpen(true)} onOpenWithdraw={() => setWithdrawOpen(true)} onOpenDeliveries={() => setScreen('deliveries')} />}
+    {screen === 'home' && <HomePage online={online} onToggleOnline={() => setOnline((value) => !value)} onOpenProfile={() => setProfileOpen(true)} onOpenEarnings={() => setEarningsOpen(true)} onOpenWithdraw={() => setWithdrawOpen(true)} onOpenDeliveries={() => setScreen('deliveries')} onOpenSurge={() => setScreen('surge')} />}
     {screen === 'deliveries' && <DeliveriesPage activeJob={activeJob} jobs={availableJobs} statusIndex={statusIndex} statuses={statuses} onAdvanceStatus={() => setStatusIndex((index) => Math.min(index + 1, statuses.length - 1))} onSelectJob={setSelectedJob} />}
+    {screen === 'surge' && <SurgePage places={surgePlaces} />}
     {screen === 'meetings' && <MeetingsPage meetingDate={meetingDate} selectedDay={selectedDay} joinedMeetings={joinedMeetings} dates={dates} days={calendarDays} meetings={meetings} onSelectDate={selectDate} onSelectDay={(day) => { setSelectedDay(day); setMeetingDate(day === 22 ? 'Today' : day === 23 ? 'Tomorrow' : day === 25 ? 'Aug 25' : `Aug ${day}`); }} onToggleJoin={(title) => setJoinedMeetings((items) => items.includes(title) ? items.filter((item) => item !== title) : [...items, title])} />}
     {screen === 'chat' && <ChatPage messages={chatMessages} value={chatMessage} onChange={setChatMessage} onSend={sendChat} />}
-  </ScrollView><View style={styles.tabBar}><Tab label="Home" icon="H" active={screen === 'home'} onPress={() => setScreen('home')} /><Tab label="Deliveries" icon="D" active={screen === 'deliveries'} onPress={() => setScreen('deliveries')} /><Tab label="Meetings" icon="M" active={screen === 'meetings'} onPress={() => setScreen('meetings')} /><Tab label="Chat" icon="C" active={screen === 'chat'} onPress={() => setScreen('chat')} /></View>
+  </ScrollView><View style={styles.tabBar}><Tab label="Home" icon="H" active={screen === 'home'} onPress={() => setScreen('home')} /><Tab label="Deliveries" icon="D" active={screen === 'deliveries'} onPress={() => setScreen('deliveries')} /><Tab label="Surge" icon="S" active={screen === 'surge'} onPress={() => setScreen('surge')} /><Tab label="Meetings" icon="M" active={screen === 'meetings'} onPress={() => setScreen('meetings')} /><Tab label="Chat" icon="C" active={screen === 'chat'} onPress={() => setScreen('chat')} /></View>
     <Modal visible={selectedJob !== null} transparent animationType="slide" onRequestClose={() => setSelectedJob(null)}><View style={styles.backdrop}><View style={styles.sheet}><Text style={styles.kicker}>DELIVERY DETAILS</Text><Text style={styles.sheetTitle}>{selectedJob?.type}</Text><Text style={styles.fare}>{selectedJob?.fare}</Text><Text style={styles.label}>PICKUP</Text><Text style={styles.address}>{selectedJob?.pickup}</Text><Text style={styles.label}>DROP-OFF</Text><Text style={styles.address}>{selectedJob?.dropoff}</Text><Pressable onPress={selectedJob?.type === activeJob.type && selectedJob.pickup === activeJob.pickup ? () => setSelectedJob(null) : acceptJob} style={styles.button}><Text style={styles.buttonText}>{selectedJob?.type === activeJob.type && selectedJob.pickup === activeJob.pickup ? 'Close' : 'Accept job'}</Text></Pressable></View></View></Modal>
     <Modal visible={profileOpen} transparent animationType="slide" onRequestClose={() => setProfileOpen(false)}><View style={styles.backdrop}><View style={styles.sheet}><Text style={styles.kicker}>DRIVER PROFILE</Text><Text style={styles.sheetTitle}>Alex Morgan</Text><Text style={styles.muted}>alex.morgan@example.com</Text><Text style={styles.row}>Vehicle <Text style={styles.rowValue}>City bike</Text></Text><Text style={styles.row}>Driver rating <Text style={styles.rowValue}>4.9 / 5.0</Text></Text><Pressable onPress={() => setProfileOpen(false)} style={styles.button}><Text style={styles.buttonText}>Done</Text></Pressable></View></View></Modal>
     <Modal visible={earningsOpen} transparent animationType="slide" onRequestClose={() => setEarningsOpen(false)}><View style={styles.backdrop}><View style={styles.sheet}><Text style={styles.kicker}>EARNINGS SUMMARY</Text><Text style={styles.sheetTitle}>$86.40 today</Text>{withdrawalRequested && <Text style={styles.success}>Withdrawal request pending</Text>}<Text style={styles.row}>Delivery pay <Text style={styles.rowValue}>$72.40</Text></Text><Text style={styles.row}>Tips <Text style={styles.rowValue}>$14.00</Text></Text><Pressable onPress={() => { setEarningsOpen(false); setWithdrawOpen(true); }} style={styles.button}><Text style={styles.buttonText}>Request withdrawal</Text></Pressable><Pressable onPress={() => setEarningsOpen(false)} style={styles.cancel}><Text style={styles.muted}>Done</Text></Pressable></View></View></Modal>
