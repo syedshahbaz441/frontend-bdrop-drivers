@@ -18,7 +18,9 @@ The initial dashboard includes:
 - Online/offline availability toggle
 - Today's earnings, rating, and online time
 - Active delivery route with pickup and drop-off
-- Delivery status action
-- Upcoming jobs list
+- Delivery progress through pickup, delivery, and completion
+- Delivery details and job acceptance flow
+- Earnings summary and driver profile sheets
+- Upcoming jobs list with an empty state
 
 The dashboard currently uses local mock data while driver API endpoints are finalized. The customer frontend uses the shared backend through `http://localhost:4400/api`.
