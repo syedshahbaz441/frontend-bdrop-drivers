@@ -15,10 +15,10 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "expo start --port 4400",
+    "android": "expo start --android --port 4400",
+    "ios": "expo start --ios --port 4400",
+    "web": "expo start --web --port 4400"
   },
   "private": true
 }
