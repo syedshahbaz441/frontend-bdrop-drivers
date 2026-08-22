@@ -28,3 +28,9 @@ The initial dashboard includes:
 - Withdrawal requests for the full balance or a custom amount
 
 The dashboard currently uses local mock data while driver API endpoints are finalized. The customer frontend uses the shared backend through `http://localhost:4400/api`.
+
+## Driver order notifications
+
+The app requests notification permission on startup and registers an Android `driver-orders` channel with maximum importance, sound, and vibration. The device push token logged during development must be saved by the backend for the authenticated driver.
+
+When a customer books an order, send a push notification with `categoryIdentifier: "driver-order"`, `sound: "default"`, and order data including `orderId`. On Android, include `sticky: true` and `autoDismiss: false`. The backend must stop sending or update the order notification when the driver rejects it or another driver accepts it.

@@ -6,6 +6,15 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#329467",
+          "defaultChannel": "driver-orders"
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },

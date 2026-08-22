@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import * as Notifications from 'expo-notifications';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChatPage } from './components/ChatPage';
 import { DeliveriesPage, Job } from './components/DeliveriesPage';
 import { HomePage } from './components/HomePage';
 import { MeetingsPage } from './components/MeetingsPage';
+import { ACCEPT_ORDER_ACTION, configureDriverNotifications, dismissDriverOrderNotification, REJECT_ORDER_ACTION } from './notifications';
 
 const jobs: Job[] = [
   { type: 'Package transfer', pickup: 'Riverside Market', dropoff: 'City Hall', time: 'Now', fare: '$18.40', background: '#fff0dc', color: '#d97706' },
@@ -41,6 +43,21 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState(['Hi Alex, I can help with deliveries, earnings, or account questions.']);
   const customAmountValue = Number(customAmount);
   const customAmountInvalid = withdrawType === 'custom' && (!customAmount.trim() || !Number.isFinite(customAmountValue) || customAmountValue <= 0 || customAmountValue > 86.4);
+  useEffect(() => {
+    configureDriverNotifications().then((token) => {
+      if (token) console.log('Register this driver push token with the backend:', token.data);
+    }).catch((error) => console.warn('Driver notifications could not be configured.', error));
+    const receivedSubscription = Notifications.addNotificationReceivedListener(() => setScreen('deliveries'));
+    const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const notificationId = response.notification.request.identifier;
+      if (response.actionIdentifier === REJECT_ORDER_ACTION) {
+        dismissDriverOrderNotification(notificationId).catch(() => undefined);
+      } else if (response.actionIdentifier === ACCEPT_ORDER_ACTION || response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
+        setScreen('deliveries');
+      }
+    });
+    return () => { receivedSubscription.remove(); responseSubscription.remove(); };
+  }, []);
   const acceptJob = () => { if (selectedJob) setAvailableJobs((items) => items.filter((job) => job.type !== selectedJob.type)); setSelectedJob(null); };
   const sendChat = () => { if (chatMessage.trim()) { setChatMessages((items) => [...items, chatMessage.trim(), 'Thanks. I am checking that for you.']); setChatMessage(''); } };
   const selectDate = (date: string) => { setMeetingDate(date); setSelectedDay(date === 'Today' ? 22 : date === 'Tomorrow' ? 23 : 25); };
