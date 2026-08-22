@@ -22,5 +22,8 @@ The initial dashboard includes:
 - Delivery details and job acceptance flow
 - Earnings summary and driver profile sheets
 - Upcoming jobs list with an empty state
+- Meetings page with calendar filters and join-only access
+- BuddyBot support chat
+- Withdrawal requests for the full balance or a custom amount
 
 The dashboard currently uses local mock data while driver API endpoints are finalized. The customer frontend uses the shared backend through `http://localhost:4400/api`.
