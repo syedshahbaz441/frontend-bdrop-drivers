@@ -63,7 +63,7 @@ export default function App() {
   const selectDate = (date: string) => { setMeetingDate(date); setSelectedDay(date === 'Today' ? 22 : date === 'Tomorrow' ? 23 : 25); };
 
   return <SafeAreaView style={styles.safeArea}><StatusBar style="light" /><ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-    {screen === 'home' && <HomePage online={online} onToggleOnline={() => setOnline((value) => !value)} onOpenProfile={() => setProfileOpen(true)} onOpenEarnings={() => setEarningsOpen(true)} onOpenDeliveries={() => setScreen('deliveries')} />}
+    {screen === 'home' && <HomePage online={online} onToggleOnline={() => setOnline((value) => !value)} onOpenProfile={() => setProfileOpen(true)} onOpenEarnings={() => setEarningsOpen(true)} onOpenWithdraw={() => setWithdrawOpen(true)} onOpenDeliveries={() => setScreen('deliveries')} />}
     {screen === 'deliveries' && <DeliveriesPage activeJob={activeJob} jobs={availableJobs} statusIndex={statusIndex} statuses={statuses} onAdvanceStatus={() => setStatusIndex((index) => Math.min(index + 1, statuses.length - 1))} onSelectJob={setSelectedJob} />}
     {screen === 'meetings' && <MeetingsPage meetingDate={meetingDate} selectedDay={selectedDay} joinedMeetings={joinedMeetings} dates={dates} days={calendarDays} meetings={meetings} onSelectDate={selectDate} onSelectDay={(day) => { setSelectedDay(day); setMeetingDate(day === 22 ? 'Today' : day === 23 ? 'Tomorrow' : day === 25 ? 'Aug 25' : `Aug ${day}`); }} onToggleJoin={(title) => setJoinedMeetings((items) => items.includes(title) ? items.filter((item) => item !== title) : [...items, title])} />}
     {screen === 'chat' && <ChatPage messages={chatMessages} value={chatMessage} onChange={setChatMessage} onSend={sendChat} />}
