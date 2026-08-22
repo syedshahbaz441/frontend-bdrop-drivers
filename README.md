@@ -17,6 +17,7 @@ The initial dashboard includes:
 
 - Online/offline availability toggle
 - Today's earnings, rating, and online time
+- Separate Home, Deliveries, Meetings, and Chat pages
 - Active delivery route with pickup and drop-off
 - Delivery progress through pickup, delivery, and completion
 - Delivery details and job acceptance flow
